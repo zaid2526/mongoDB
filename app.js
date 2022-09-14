@@ -4,10 +4,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const mongoConnect=require('./util/database').mongoConnect;
-
+const User=require('./models/user');
 const app = express();
 
 const errorController=require('./controllers/error')
+
+
 
 
 app.set('view engine', 'ejs');
@@ -21,15 +23,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  // User.findOne({where:{id:1}})
-  //   .then(user => {
-  //     req.user = user;
-  //     console.log('>>>>>>>>>>>',req.user )
-  //     next();
-  //   })
-  //   .catch(err => console.log(err));
-
-  next();
+  User.findById("632061e00a0fbdcec986ee6d")
+    .then(user => {
+      req.user = new User(user.name, user.email, user.cart, user._id);
+      // console.log('>>>>>>>>>>>',req.user )
+      next();
+    })
+    .catch(err => console.log(err));
 });
 
 app.use('/admin',adminRoutes);
